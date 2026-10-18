@@ -1,0 +1,36 @@
+name: Daily Fantasy Automation
+
+on:
+  schedule:
+    # Runs daily at 13:00 UTC (9:00 AM Eastern)
+    - cron: '0 13 * * *'
+  # Allows triggering manually via GitHub UI whenever needed
+  workflow_dispatch:
+
+jobs:
+  run-fantasy-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install google-genai playwright httpx
+          playwright install --with-deps chromium
+
+      - name: Restore Auth Session
+        run: |
+          echo "${{ secrets.SLEEPER_AUTH_STATE }}" | base64 -d > storage_state.json
+
+      - name: Run Fantasy Engine
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python run_fantasy.py
