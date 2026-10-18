@@ -32,4 +32,5 @@ jobs:
       - name: Run Fantasy Engine
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SLEEPER_USERNAME: ${{ secrets.SLEEPER_USERNAME }}
         run: python fantasy_runner.py
